@@ -1,0 +1,20 @@
+    [
+        {
+        "id": 1,
+        "title": "Producto 1",
+        "description": "Descripción del Producto 1",
+        "price": 19.99,
+        "thumbnail": "imagen1.jpg",
+        "code": "P1",
+        "stock": 10
+        },
+        {
+        "id": 2,
+        "title": "Producto 2",
+        "description": "Descripción del Producto 2",
+        "price": 29.99,
+        "thumbnail": "imagen2.jpg",
+        "code": "P2",
+        "stock": 5
+        }
+    ]
