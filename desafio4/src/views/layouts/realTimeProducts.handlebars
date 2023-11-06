@@ -1,0 +1,36 @@
+<h1>Elementos dentro de la base de datos</h1>
+<form id="selectProduct">
+    <h3>Eliminar un elemento</h3>
+    ID:<input type="number" id="iD" placeholder="ID of Item"> *ID sólo para Eliminar</br>
+    <button type="button" id="delete_Button" class="swal-button swal-button--confirm">ELIMINAR</button>
+
+    <h3>Agregar un item</h3>
+    NOMBRE: <input type="text" id="title" placeholder="Nombre"></br>
+    DESC: <input type="text" id="description" placeholder="Descripcion"></br>
+    CODIGO: <input type="text" id="code" placeholder="codigo"></br>
+    PRECIO:<input type="number" id="price" placeholder="Precio"></br>
+    CANTIDAD: <input type="number" id="stock" placeholder="Cantidad"></br>
+    CAT:  <input type="text" id="category" placeholder="Categoria"></br>
+    IMG: <input type="URL" id="IMG" placeholder="Img"></br>
+    <button type="submit" id="add_Button" class="swal-button swal-button--confirm">Agregar item</button>
+
+</form>
+
+<h1>Lista de productos</h1>
+
+<div>
+        {{#each items}}
+        <ul id={{this.id}}>
+        <h2>ID:{{this.id}} | {{this.title}}</h2>
+        <img src="{{this.thumbnail}}" style="width:150px; border:1px solid black; "alt="https://dodo.ac/np/images/a/af/Leaf_NH_Icon.png">
+        <li>Descripcion: {{this.description}}</li>
+        <li>Codigo: {{this.code}}</li>
+        <li>Precio: {{this.price}} Bells</li>
+        <li>categoria:{{this.category}}</li>
+        </ul>
+        </br>
+        {{/each}}
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="module" src="/js/index.js"></script>
