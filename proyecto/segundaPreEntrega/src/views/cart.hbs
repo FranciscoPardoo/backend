@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detalles del Carrito</title>
+</head>
+    <body>
+    <h1>Detalles del Carrito</h1>
+    <ul>
+        {{#each cartItems}}
+        <li>{{this.productName}} - Cantidad: {{this.quantity}} - Precio: {{this.price}}</li>
+        {{/each}}
+    </ul>
+
+    <button onclick="vaciarCarrito()">Vaciar Carrito</button>
+    
+    <script>
+        function vaciarCarrito() {
+        }
+    </script>
+    </body>
+</html>
