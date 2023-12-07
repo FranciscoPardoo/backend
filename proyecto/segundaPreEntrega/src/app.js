@@ -5,7 +5,7 @@ const io = require('socket.io')(http);
 const port = 8080;
 
 
-const Product = require('./models/Product');
+const Product = require('./models/Product.js');
 
 
 app.set('view engine', 'hbs');
