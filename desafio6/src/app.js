@@ -3,6 +3,9 @@ import handlebars from 'express-handlebars'
 import session from 'express-session';
 import cookieParser from 'cookie-parser'
 import MongoStore from 'connect-mongo'
+import "dotenv/config.js";
+import passport from "passport";
+import initializePassport from "./config/passport.config.js";
 import __dirname from './utils.js';
 import  Server  from "socket.io";
 import mongoose from 'mongoose'
@@ -14,68 +17,77 @@ import indexRouter from './routers/views/index.js';
 import loginRouter from './routers/views/loging.js'
 import registerRouter from './routers/views/register.js'
 import sessionsApiRouter from './routers/api/sessions.js'
+import profileRouter from "./routers/views/profile.js";
+import recoveryPassword from "./routers/views/recoverypassword.js";
 import Product from './models/products.model.js';
-import Cart from './models/carts.model.js'
-import { registerUser } from './controller/auth.controllers.js';
+import Cart from './models/carts.model.js';
 
 const app =express();
-const port = 8080;
+const port = 3000;
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
-
-
-app.use((err,req,res,next)=>{
-    console.error(err.stack);
-    res.status(500).send("Something went wrong");
-})
-
 app.engine('handlebars', handlebars.engine());
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname+'/public'));
 app.use(cookieParser());
-
 app.use(session({
-    secret:"DemonSeeksKnowledge",
+    secret:process.env.hash,
     resave: false,
     saveUninitialized: true,
     store: MongoStore.create({
-        mongoUrl:'mongodb+srv://ffranpardo30:87LlUsNRiXoWzhEk@ecommerce.93yr8pn.mongodb.net/'
-        ,tls: 2*60    
+        mongoUrl:process.env.mongo,
+        ttl: 4*60,
+        autoRemove:"native"    
     }),
 }));
 
+
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 app.use('/api/carts',Cartrouter);
 app.use('/api/products',productRouter);
-
 app.use('/',indexRouter);
 app.use('/login',loginRouter);
 app.use('/register',registerRouter);
+app.use("/profile", profileRouter);
 app.use('/api/sessions',sessionsApiRouter);
+app.use("/recovery", recoveryPassword);
+
+app.use((err,req,res,next)=>{
+    console.error(err.stack);
+    res.status(500).send("Something went wrong here");
+})
 
 const httpServer =app.listen(port,()=>{
     console.log(`Current port ${port}`)
 })
 
 const io = new Server(httpServer);
+let current_user="";
 
 io.on('connection',async(socket)=>{
+    socket.on("update_user", (data)=>{
+        console.log("current user",data.name);
+        current_user=data.name;
+    })
+    
 
-    io.on("gater_cart",async ()=>{
-        let user={username:"DummyCart"};
-        console.log('Cart Ready')
-        const preload_cart = (await Cart.find(user))[0]
+        let user=current_user;
+        console.log('Cart Ready',user)
+        const preload_cart = (await Cart.find({username:`${user}`}))[0]
         if(preload_cart === undefined){
             console.log("cart not found")
         }
         else if(preload_cart.products.length >0){
             console.log("items found")
-            socket.emit("cart_updated",[user,preload_cart])
-        }else{socket.emit("list_user",user)}
-    })  
-
+            socket.emit("cart_updated",[{username:`${user}`},preload_cart])
+        }else{socket.emit("list_user",{username:`${user}`})} 
     socket.on("add_to_cart", async (data)=>{
-        const get_cart= (await Cart.find(user))[0]
+        let user =current_user
+        console.log(user)
+        const get_cart= (await Cart.find({username:`${user}`}))[0]
         const product = (await Product.find({_id:data}))[0]
         let total =get_cart.total
         const Current_products = get_cart.products
@@ -95,7 +107,6 @@ io.on('connection',async(socket)=>{
                 socket.emit("not_enough")
             }}
         else{
-
         get_cart.products.push({product:product,name:product.title,thumbnail:product.thumbnail,price:product.price,quantity:1})
         }
         let new_total=0
@@ -104,18 +115,19 @@ io.on('connection',async(socket)=>{
         get_cart.total = new_total;
         console.log(`item added to cart` , product)
         const result = await Cart.updateOne({
-            username:"DummyCart"},
+            username:`${user}`},
             get_cart
             );
         console.log(get_cart)
-        socket.emit("cart_updated",[user,get_cart])
+        socket.emit("cart_updated",[{username:`${user}`},get_cart])
     })
-
     socket.on("remove_from_cart",async (data)=>{
-        const get_cart= (await Cart.find(user))[0]
+        let user =current_user
+        const get_cart= (await Cart.find({username:`${user}`}))[0]
         const product = (await Product.find({_id:data}))[0]
 
         const total =get_cart.total
+
         const index=get_cart.products.findIndex(x=>{
             return JSON.stringify(x.product)===`"${data}"`});
         let item_incart = get_cart.products[index];
@@ -125,18 +137,20 @@ io.on('connection',async(socket)=>{
         }else{
             get_cart.products.splice(index,1)
         }
+
         let new_total=0
                 for(let item in get_cart.products){
                     new_total+= get_cart.products[item].price*get_cart.products[item].quantity}
         get_cart.total = new_total;
         const result = await Cart.updateOne({
-            username:"DummyCart"},
+            username:`${user}`},
             get_cart
             );
             console.log(get_cart)
-            socket.emit("cart_updated",[user,get_cart])
+            socket.emit("cart_updated",[{username:`${user}`},get_cart])
     })
     
+
     socket.on('sort_now', async (data) => {
         console.log("Received", data);
         if(data[1]==="ALL"){
