@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import "dotenv/config.js";
 
-mongoose.connect(process.env.mongo,{})
+mongoose.connect(process.env.MONGODB_URL,{})
 
 
 const db = mongoose.connection

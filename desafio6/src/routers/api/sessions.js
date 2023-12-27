@@ -3,7 +3,7 @@ import {
     loginUser,
     registerUser,
     recoveryPassword
-}from "../../controller/auth.controllers.js"
+}from "../../controller/auth.controller.js"
 import passport from "passport";
 
 import express from "express"
@@ -67,4 +67,4 @@ router.get(
 
 
 
-export default router
+export default router;

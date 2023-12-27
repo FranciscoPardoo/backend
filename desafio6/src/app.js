@@ -1,29 +1,29 @@
-import express from 'express'
-import handlebars from 'express-handlebars'
+import express from 'express';
+import handlebars from 'express-handlebars';
 import session from 'express-session';
-import cookieParser from 'cookie-parser'
-import MongoStore from 'connect-mongo'
+import cookieParser from 'cookie-parser';
+import MongoStore from 'connect-mongo';
 import "dotenv/config.js";
 import passport from "passport";
 import initializePassport from "./config/passport.config.js";
 import __dirname from './utils.js';
 import  Server  from "socket.io";
-import mongoose from 'mongoose'
-import {db} from "./config/database.js"
+import mongoose from 'mongoose';
+import {db} from "./config/database.js";
 import path from 'path';
 import Cartrouter from './routers/carts.router.js';
 import { productRouter } from './routers/products.router.js';
 import indexRouter from './routers/views/index.js';
-import loginRouter from './routers/views/loging.js'
-import registerRouter from './routers/views/register.js'
-import sessionsApiRouter from './routers/api/sessions.js'
+import loginRouter from './routers/views/loging.js';
+import registerRouter from './routers/views/register.js';
+import sessionsApiRouter from './routers/api/sessions.js';
 import profileRouter from "./routers/views/profile.js";
 import recoveryPassword from "./routers/views/recoverypassword.js";
 import Product from './models/products.model.js';
 import Cart from './models/carts.model.js';
 
 const app =express();
-const port = 3000;
+const port = 8080;
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.engine('handlebars', handlebars.engine());
@@ -32,13 +32,12 @@ app.set('view engine', 'handlebars');
 app.use(express.static(__dirname+'/public'));
 app.use(cookieParser());
 app.use(session({
-    secret:process.env.hash,
+    secret:process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     store: MongoStore.create({
-        mongoUrl:process.env.mongo,
-        ttl: 4*60,
-        autoRemove:"native"    
+        mongoUrl:process.env.MONGODB_URL,
+        ttl: 2*60,   
     }),
 }));
 
@@ -55,10 +54,10 @@ app.use("/profile", profileRouter);
 app.use('/api/sessions',sessionsApiRouter);
 app.use("/recovery", recoveryPassword);
 
-app.use((err,req,res,next)=>{
+app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).send("Something went wrong here");
-})
+    res.status(500).json({ error: 'Something went wrong here' });
+});
 
 const httpServer =app.listen(port,()=>{
     console.log(`Current port ${port}`)

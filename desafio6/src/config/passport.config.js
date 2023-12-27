@@ -1,6 +1,5 @@
 import passport from "passport";
 import local from "passport-local";
-
 import GitHubStrategy from "passport-github2";
 import userModel from "../models/user.model.js";
 import "dotenv/config.js";
@@ -19,27 +18,27 @@ const initializePassport = () => {
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
-            console.log(profile);
-            let user = await userModel.findOne({ email: profile._json.email });
-            if (!user) {
-                let newUser = {
-                name: profile._json.name,
-                email: profile._json.email,
-                password: "",
-                };
-                let result = await userModel.create(newUser);
-                try{
-                const cart =new Cart({username:newUser.name}); 
-                const newCart = await cart.save(); 
+                console.log(profile);
+                let user = await userModel.findOne({ email: profile._json.email });
+                if (!user) {
+                    let newUser = {
+                    name: profile._json.name,
+                    email: profile._json.email,
+                    password: "",
+                    };
+                    let result = await userModel.create(newUser);
+                    try{
+                        const cart =new Cart({username:newUser.name}); 
+                        const newCart = await cart.save(); 
+                    }
+                    catch(error){
+                        console.log("error creating cart",error)}
+                    done(null, result);
+                } else {
+                    done(null, user);
                 }
-                catch(error){
-                    console.log("error creating cart",error)}
-                done(null, result);
-            } else {
-                done(null, user);
-            }
             } catch (error) {
-            done(error);
+                done(error);
             }
         }
         )
@@ -83,9 +82,7 @@ const initializePassport = () => {
                 console.log("Usuario no existe ");
                 return done(null, false);
             }
-
             if (!isValidPassword(user, password)) return done(null, false);
-
             return done(null, user);
             } catch (error) {
             return done(error);
@@ -93,7 +90,8 @@ const initializePassport = () => {
         }
         )
     );
-    };
+};
+
     passport.serializeUser((user, done) => {
     console.log(user._id);
     done(null, user._id);
