@@ -1,4 +1,4 @@
-import userModel from "../models/user.model.js";
+import userModel from "../dao/models/user.model.js";
 import { isValidPassword } from "../utils.js";
 
 const getUser= async(username)=>{

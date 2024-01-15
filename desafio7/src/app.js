@@ -19,8 +19,8 @@ import registerRouter from './routers/views/register.js'
 import sessionsApiRouter from './routers/api/users.routes.js'
 import profileRouter from "./routers/views/profile.js";
 import recoveryPassword from "./routers/views/recoverypassword.js";
-import Product from './models/products.model.js';
-import Cart from './models/carts.model.js';
+import Product from './dao/models/products.model.js';
+import Cart from './dao/models/carts.model.js';
 
 const app =express();
 const port = 3000;
@@ -76,7 +76,7 @@ let current_user="";
 io.on('connection',async(socket)=>{
     
     socket.on("update_user", (data)=>{
-        current_user=data.name;
+        current_user=data?.name;
     })
     
         let user=current_user;

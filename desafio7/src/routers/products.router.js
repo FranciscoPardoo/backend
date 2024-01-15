@@ -1,5 +1,5 @@
 import express from 'express';
-import Product from '../models/products.model.js';
+import Product from '../dao/models/products.model.js';
 import io from "../app.js"
 const productRouter = express.Router()
 

@@ -1,9 +1,9 @@
 import passport from "passport";
 import local from "passport-local";
 import jwt from "passport-jwt";
-import userModel from "../models/user.model.js";
+import userModel from "../dao/models/user.model.js";
 import "dotenv/config.js";
-import Cart from '../models/carts.model.js';
+import Cart from '../dao/models/carts.model.js';
 import { createHash, isValidPassword } from "../utils.js";
 const LocalStrategy = local.Strategy;
 

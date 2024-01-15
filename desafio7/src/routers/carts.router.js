@@ -1,10 +1,10 @@
 import express from 'express';
-import Cart from '../models/carts.model.js'
+import Cart from '../dao/models/carts.model.js'
 import { productRouter } from './products.router.js';
 
 
 import io from '../app.js'
-import Product from '../models/products.model.js';
+import Product from '../dao/models/products.model.js';
 
 
 const Cartrouter =express.Router();

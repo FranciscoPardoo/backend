@@ -1,4 +1,4 @@
-import Cart from '../models/carts.model.js';
+import Cart from '../dao/models/carts.model.js';
 
 const getCart= async(user) =>{
     const cart=(await Cart.find({username:`${user}`}))[0]
