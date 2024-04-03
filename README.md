@@ -1,2 +1,2 @@
 # backend
-curso backend de coderhouse
+Proyecto final del curso de backend de coderhouse
